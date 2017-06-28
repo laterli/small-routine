@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta name="viewport" charset="utf-8" content="width=device-width,user-scalable=no，initial-scale=1"/>
+    <style type="text/css">
+        body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, a, big, em, font, img, strong, tt, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, table, caption, tbody, tfoot, thead, tr, th, td {
+            margin: 0;
+            padding: 0;
+            outline: none;
+            border: none;
+            resize: none;
+            word-break: break-all;
+            word-wrap: break-word;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        .body{width: 100%;height: 100%;background-color: #77c68b;}
+        #canvas{position: absolute;left:50%;margin-left: -400px;background-color: #fff;}
+    </style>
+
+</head>
+<body>
+<div class="body">
+<canvas id="canvas" width="800" height="800"></canvas>
+    <label id="grade"></label>
+</div>
+
+<script type="text/javascript">
+var canvas=document.getElementById('canvas');
+var context=canvas.getContext('2d');
+var gradelabel=document.getElementById("grade");
+var  rectcoord=[21,22,23],
+     rectx=0,
+     recty=0,
+     rect=[],
+     rectnum=0,
+     mark=true,
+     speed=100,
+     dir= 2,
+     movenum= 1,
+     foodcoord= 0,
+     grade= 0,
+     head=0;
+
+
+//绑定键盘事件
+document.addEventListener("keydown",function(e){
+            var e=e||event;
+            var currKey=e.keyCode||e.which||e.charCode;
+            switch(currKey){
+                case 37:if(dir!=2){dir=4}break;//左
+                case 38:if(dir!=3){dir=1}break;//上
+                case 39:if(dir!=4){dir=2}break;//右
+                case 40:if(dir!=1){dir=3}break;//下
+                default:break;
+            }
+
+        });
+//绘制蛇身
+function snack() {
+    if(mark){
+       foodcoord=food();
+    }
+    context.clearRect(0,0,canvas.width,canvas.height);
+    canvas.width=canvas.width;
+    for(var a=0;a<20;a++){
+        for(var b=0;b<20;b++){
+            temp="context.beginPath();context.rect("+rectx+","+recty+", 40, 40);context.fillStyle = 'white';context.fill();" +
+                    "context.strokeStyle = 'white';context.stroke();";
+            rect.push(temp);
+            rectx<760?rectx+=40:rectx=0;
+        }
+        recty<800?recty+=40:recty=0;
+    }
+    var c=rectcoord.length;
+     for(var d=0;d<c;d++){
+         rect[rectcoord[d]]=rect[rectcoord[d]].replace(/white/g,"green");
+     }
+        rect[foodcoord]=rect[foodcoord].replace(/white/g,"orangered");
+        eval(rect.join(""));
+        rect=[],rectx=0,recty=0,mark=false;
+        snackmove();
+        gradelabel.innerHTML="得分："+grade+"";
+}
+
+//绘制食物
+function food(){
+   var ispass=true;
+   var a= parseInt(Math.random()*400);
+        for(var b in rectcoord){
+            if(a==rectcoord[b]){
+                ispass=false;
+                break;
+            }
+        }
+    return ispass?a:food();
+}
+
+//死亡
+function die(){
+    var a=rectcoord.length;
+    var diecoord=rectcoord.slice(0,a-1);
+    for(var b in diecoord){
+        if(head==diecoord[b]){
+            clearInterval(begin);
+            setTimeout(function(){
+                context.beginPath();
+                context.clearRect(0,0,canvas.width,canvas.height);
+                canvas.width=canvas.width;
+                context.fillStyle = '#ee6a39';
+                context.font = '50px Calibri';
+                context.fillText("游戏结束,得分："+grade+"",220,375);
+                context.lineJoin = 'miter';
+                context.stroke();
+            },1500);
+            break;
+        }
+    }
+}
+
+//蛇身移动
+ function snackmove(){
+     var b= rectcoord.shift();
+     var a= rectcoord.pop();
+     rectcoord.push(a);
+     switch (dir){
+         case 1:movenum=-20;if(a+movenum<0){movenum=380;}break;
+         case 2:movenum=1;if(a%20==19){movenum=-19;}break;
+         case 3:movenum=20;if(a+movenum>399){movenum=-380;}break;
+         case 4:movenum=-1;if(a%20==0){movenum=19;}break;
+     }
+     head=a+movenum;
+     rectcoord.push(head);
+     //吃食物
+     if(head==foodcoord){
+         rectcoord.unshift(b);
+         foodcoord=food();
+         grade++;
+         if(grade%50==0){
+             speed-=10;
+         }
+     }
+     die();
+ }
+var begin=setInterval("snack()",speed);
+</script>
+</body>
+</html>

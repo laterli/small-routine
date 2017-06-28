@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="style/bootstrap.min.css">
+	<style>
+		.shop{
+			width: 800px;
+			height:800px;
+			margin:0 auto;
+		}
+	</style>
+</head>
+<body>
+	<div class="shop" id='app'>
+		<button v-on:click='btn(index)' v-for='(frieta,index) in frietlist'>{{frieta.name}}</button>
+		<h1>总价：{{total}}</h1>
+		<table class="table table-bordered">
+			<thead>
+				<th>商品</th>
+				<th>单价</th>
+				<th>数量</th>
+				<th>合计</th>
+			</thead>
+			<tbody>
+				<tr v-for='(val,index) in friet'>
+					<td>{{val.name}}</td>
+					<td>{{val.price}}</td>
+					<td>
+						<button v-on:click='minus(index)'>-</button>
+						<span>{{val.num}}</span>
+						<button v-on:click='addnum(index)'>+</button>
+					</td>
+					<td>{{val.tatel}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<script src='script/vue.min.js'></script>
+	<script>
+		var app=new Vue({
+			el:'#app',
+			data:{
+				total:0,
+				friet:[],
+				frietlist:[
+					{name:'香蕉',price:1,num:0,tatel:0},
+					{name:'鸭梨',price:10,num:0,tatel:0},
+					{name:'苹果',price:20,num:0,tatel:0},
+					{name:'鹅',price:30,num:0,tatel:0},
+				],
+			},
+			methods:{
+				minus:function(ind){
+					if(this.friet[ind].num>0){
+						this.friet[ind].num--;
+						this.friet[ind].tatel=this.friet[ind].price*this.friet[ind].num
+					}else{
+						this.friet[ind].num===0
+					};
+					this.getResult()
+				},
+				addnum:function(ind){
+					this.friet[ind].num++;
+					this.friet[ind].tatel=this.friet[ind].price*this.friet[ind].num;
+					this.getResult()
+				},
+				getResult:function(){
+					var inde=this.friet.length
+					var number=0
+					for(var i=0;i<inde;i++){
+						number=this.friet[i].tatel+number
+					}
+					this.total=number
+				},
+				btn:function(ind){
+					var boll=false
+					var n=0;
+					for(var i=0;i<this.frietlist.length;i++){
+						if(this.friet[i]===this.frietlist[ind]){
+							boll=true
+							n=i
+						}
+					}
+					if(boll===false){
+						this.friet.push(this.frietlist[ind])
+					}else{
+						this.addnum(n)
+					}
+				}
+			}
+		})
+		</script>
+</body>
+</html>
